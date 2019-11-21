@@ -1,7 +1,6 @@
 {
 	"server": "https://vmandi.acmems.in",
-	"libs": [
-	],
+	"libs": [],
 	"app": "index.html",
 	"versionCode": 1
 }
