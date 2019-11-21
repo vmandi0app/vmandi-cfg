@@ -1,0 +1,13 @@
+{
+	"ch0": {
+		"idx": 0,
+		"template" : "([0-9]{6}) is your verification code for vMandi",
+		"len": 6
+	},
+	"ch1": {
+		"idx": 1,
+		"template" : "([0-9]{6}) is your verification code",
+		"len": 6,
+		"lt": 1
+	}
+}
