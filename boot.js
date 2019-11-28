@@ -137,7 +137,9 @@ function $onboot(boot) {
 
 
 (function () {
-	window._DEBUG = BuildInfo.debug;
+	var major = 1,
+		minor = 1,
+		patch = 0;
 	var json = {
 		server: "https://vmandi.acmems.in",
 		libs: [
@@ -153,11 +155,13 @@ function $onboot(boot) {
 			'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.min.css',
 			'https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js',
 			'https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js',
-			'https://cdn.jsdelivr.net/npm/knockout-secure-binding/dist/knockout-secure-binding.min.js'
+			'https://cdn.jsdelivr.net/npm/knockout-secure-binding@0.5.5/dist/knockout-secure-binding.min.js',
+			'https://cdn.jsdelivr.net/npm/i18next-ko@3.0.1/lib/i18next-ko.bundle.min.js'
 		],
 		app: "index.html",
-		versionCode: 1
+		versionCode: major * 10000 + minor * 100 + patch
 	}
+	window._DEBUG = BuildInfo.debug;
 	if (!_DEBUG) {
 		$onboot(json);
 	} else {
