@@ -95,6 +95,7 @@ function $findLocalServer(mi, cb, i) {
 }
 
 function $onboot(boot) {
+	console.log('versionCode:', BuildInfo.versionCode);
 	if (boot.versionCode > BuildInfo.versionCode) {
 		alert('New Updates available');
 		window.open('market://details?id=' + BuildInfo.packageName, '_system', 'location=yes');
