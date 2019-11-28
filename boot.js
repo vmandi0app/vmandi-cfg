@@ -151,7 +151,6 @@ function $onboot(boot) {
 			'https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/default-skin/default-skin.min.css',
 			'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.min.css',
 
-			'https://cdn.jsdelivr.net/npm/@babel/polyfill@7.7.0/dist/polyfill.min.js',
 			'https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol.js',
 			'https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/photoswipe.min.js',
 			'https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/photoswipe-ui-default.min.js',
@@ -159,7 +158,6 @@ function $onboot(boot) {
 			'https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js',
 			'https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js',
 			'https://cdn.jsdelivr.net/npm/knockout-secure-binding@0.5.5/dist/knockout-secure-binding.min.js',
-			'https://cdn.jsdelivr.net/npm/i18next-ko@3.0.1/lib/i18next-ko.bundle.min.js'
 		],
 		app: "index.html",
 		versionCode: major * 10000 + minor * 100 + patch
