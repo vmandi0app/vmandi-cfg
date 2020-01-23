@@ -80,18 +80,21 @@ function $loadScripts(options, cb) {
 
 function $findLocalServer(mi, cb, i) {
 	i = i || 2;
-	var err;
-	var url = 'http://192.168.1.' + i
-		+ ':53240/static/_dbg.json?r=' + Math.random();
-	$.getJSON(url, function (json) {
-		cb(err, 'http://192.168.1.' + i + ':53240');
-	}).fail(function () {
-		if (i <= mi) {
-			$findLocalServer(mi, cb, i + 1);
-		} else {
-			cb('unable to find boot.json');
-		}
-	});
+	$.ajax({
+		url: 'http://192.168.1.' + i + ':53240/',
+		method: 'HEAD',
+		cache: false
+	})
+		.done(function () {
+			cb(null, 'http://192.168.1.' + i + ':53240');
+		})
+		.fail(function () {
+			if (i < mi) {
+				$findLocalServer(mi, cb, i + 1);
+			} else {
+				cb('unable to find local server');
+			}
+		});
 }
 
 function $onboot(boot) {
@@ -110,10 +113,11 @@ function $onboot(boot) {
 		files: boot.libs,
 		debug: _DEBUG
 	}, function () {
-		var app_url = STATIC_SERVER + '/' + boot.app + '?r=' + Math.random();
+		var app_url = STATIC_SERVER + '/' + boot.app;
 		$.ajax({
 			url: app_url,
 			timeout: 5000,
+			cache: false
 		}).done(function (data) {
 			var tempDom = $('<temp>').append(data);
 			var jsfile = $('script[data-entry-point]', tempDom).attr('src');
