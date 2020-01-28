@@ -85,6 +85,7 @@ function $findLocalServer(mi, cb, i) {
 	$.ajax({
 		url: 'http://192.168.1.' + i + ':53240/',
 		method: 'HEAD',
+		timeout: 250,
 		cache: false
 	})
 		.done(function () {
