@@ -1,3 +1,5 @@
+(function () {
+
 function $loadScripts(options, cb) {
 	options = options || {}
 	options.files = options.files || [];
@@ -106,63 +108,49 @@ function $onboot(boot) {
 	}
 	window.ROOT_SERVER = boot.server;
 	window.STATIC_SERVER = boot.server + '/static';
-	// var libs = boot.libs.map(function (lib) {
-	// 	return STATIC_SERVER + '/' + lib;
-	// });
-	$loadScripts({
-		files: boot.libs,
-		debug: _DEBUG
-	}, function () {
-		var app_url = STATIC_SERVER + '/' + boot.app;
-		$.ajax({
-			url: app_url,
-			timeout: 5000,
-			cache: false
-		}).done(function (data) {
-			var tempDom = $('<temp>').append(data);
-			var jsfile = $('script[data-entry-point]', tempDom).attr('src');
-			var cssfile = jsfile.split('.js').join('') + '.css';
-			$('script,link,meta,title', tempDom).remove();
-			var html = tempDom.html().trim();
+	var app_url = STATIC_SERVER + '/' + boot.app;
+	$.ajax({
+		url: app_url,
+		timeout: 5000,
+		cache: false
+	}).done(function (data) {
+		var tempDom = $('<temp>').append(data);
+		var jsEntryPoint = $('script[data-entry-point]', tempDom).attr('src');
+		var cssEntryPoint = jsEntryPoint.split('.js').join('') + '.css';
+		var libs = [],
+			scripts = $('script:not([data-boot-exclude])', tempDom);
+		for (var i = 0; i < scripts.length; i++) {
+			var src = scripts[i].getAttribute('src');
+			if (src) {
+				libs.push(src === jsEntryPoint ? STATIC_SERVER + '/' + src : src);
+			}
+		}
+		scripts = $('link[rel="stylesheet"]:not([data-boot-exclude])', tempDom);
+		for (var i = 0; i < scripts.length; i++) {
+			var src = scripts[i].getAttribute('href');
+			if (src) {
+				libs.push(src === cssEntryPoint ? STATIC_SERVER + '/' + src : src);
+			}
+		}
+		$('script,link,meta,title', tempDom).remove();
+		var html = tempDom.html().trim();
 
-			$(html).appendTo(document.body);
-			$loadScripts({
-				files: [
-					STATIC_SERVER + '/' + cssfile,
-					STATIC_SERVER + '/' + jsfile
-				],
-				withCache: false,
-				debug: _DEBUG
-			});
-		}).fail(function (jqXHR, textStatus, exception) {
-			$vmandi.exit('not found app in remote server.');
+		$(html).appendTo(document.body);
+		$loadScripts({
+			files: libs,
+			withCache: false,
+			debug: _DEBUG
 		});
+	}).fail(function (jqXHR, textStatus, exception) {
+		$vmandi.exit('not found app in remote server.');
 	});
 }
 
-
-(function () {
 	var major = 1,
 		minor = 1,
 		patch = 0;
 	var json = {
 		server: "https://vmandi.acmems.in",
-		libs: [
-			'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css',
-			'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/v4-shims.min.css',
-			'https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol.css',
-			'https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/photoswipe.min.css',
-			'https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/default-skin/default-skin.min.css',
-			'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.min.css',
-
-			'https://cdnjs.cloudflare.com/ajax/libs/ol3/4.6.5/ol.js',
-			'https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/photoswipe.min.js',
-			'https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.3/photoswipe-ui-default.min.js',
-			'https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.min.js',
-			'https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js',
-			'https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js',
-			'https://cdn.jsdelivr.net/npm/knockout-secure-binding@0.5.5/dist/knockout-secure-binding.min.js',
-		],
 		app: "index.html",
 		versionCode: major * 10000 + minor * 100 + patch
 	}
