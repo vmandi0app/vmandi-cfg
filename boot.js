@@ -139,20 +139,19 @@
 						}
 					}
 
-					$('script,link,meta,title', tempDom).remove();
-					var html = tempDom.html().trim();
-
-					$(html).appendTo(document.body);
-					
 					$loadScripts({ files: libs }, function () {
+						$('script,link,meta,title', tempDom).remove();
+						var html = tempDom.html().trim();
+						$(html).appendTo(document.body);
+
 						$loadScripts({
 							files: [STATIC_SERVER + '/' + jsEntryPoint],
 							withCache: false
 						});
 					});
 
-				})
-			})
+				});
+			});
 
 		}).fail(function (jqXHR, textStatus, exception) {
 			$vmandi.exit('not found app in remote server.');
