@@ -57,7 +57,7 @@
         var src = el.getAttribute('src');
         if (src) {
           src = src !== cssEntryPoint ? src : STATIC_SERVER + '/' + jsEntryPoint + '?_=' + new Date().getTime();
-          $('<script src="' + src + '"></script>').appendTo(document.head)
+          $('<script src="' + src + '"></script>').appendTo(document.body);
         }
       })
 
