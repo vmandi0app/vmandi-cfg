@@ -1,82 +1,5 @@
 (function () {
 
-  function $loadScripts(options, cb) {
-    options = options || {}
-    options.files = options.files || [];
-    options.withCache = options.withCache || true;
-    options.debug = options.debug || false;
-    cb = cb || function () { };
-    var m_head = document.getElementsByTagName("head")[0];
-    function log(t) {
-      if (options.debug) { console.log('loadScripts: ' + t); }
-    }
-    function normalizeFile(filename) {
-      if (!options.withCache) {
-        if (filename.indexOf('?') === -1)
-          filename += '?no_cache=' + new Date().getTime();
-        else
-          filename += '&no_cache=' + new Date().getTime();
-      }
-      return filename;
-    }
-    function endsWith(str, suffix) {
-      if (str === null || suffix === null)
-        return false;
-      return str.indexOf(suffix, str.length - suffix.length) !== -1;
-    }
-    function loadCss(filename) {
-      // HTMLLinkElement
-      var link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.type = "text/css";
-      link.href = normalizeFile(filename);
-
-      log('Loading style ' + filename);
-      link.onload = function () {
-        log('Loaded style "' + filename + '".');
-      };
-
-      link.onerror = function () {
-        log('Error loading style "' + filename + '".');
-      };
-
-      m_head.appendChild(link);
-    }
-
-    function loadJs(libs, oncomplete) {
-      var lib = libs[0];
-      if (lib) {
-        var script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = normalizeFile(lib);
-        script.onload = function () {
-          log('Loaded script "' + lib + '".');
-          libs.shift();
-          loadJs(libs, oncomplete);
-        };
-        script.onerror = function () {
-          log('Error loading script "' + lib + '".');
-          libs.shift();
-          loadJs(libs, oncomplete);
-        }
-        log('Loading script "' + lib + '".');
-        m_head.appendChild(script);
-      } else {
-        oncomplete();
-      }
-    }
-
-    var jsfiles = []
-    options.files.forEach(function (file, i, array) {
-      if (endsWith(file, '.css')) {
-        loadCss(file);
-      } else if (endsWith(file, '.js')) {
-        jsfiles.push(file)
-      }
-      if (array.length === i) loadJs(jsfiles, cb);
-    });
-  }
-
 
   function $findLocalServer(mi, cb, i) {
     i = i || 2;
@@ -108,6 +31,7 @@
     window.ROOT_SERVER = boot.server;
     window.STATIC_SERVER = boot.server + '/static';
     var app_url = STATIC_SERVER + '/' + boot.app;
+
     $.ajax({
       url: app_url,
       timeout: 5000,
@@ -116,47 +40,32 @@
       var tempDom = $('<temp>').append(data);
       var jsEntryPoint = $('script[data-entry-point]', tempDom).attr('src');
       var cssEntryPoint = jsEntryPoint.split('.js').join('') + '.css';
-      var libs = [], scripts = $('link[rel="stylesheet"]:not([data-boot-exclude])', tempDom);
-
-      for (var i = 0; i < scripts.length; i++) {
-        var src = scripts[i].getAttribute('href');
+      var elems = $('link[rel="stylesheet"]:not([data-boot-exclude])', tempDom);
+      elems.each(function (i, el) {
+        var src = el.getAttribute('href');
         if (src) {
-          if (src !== cssEntryPoint) libs.push(src);
+          src = src !== cssEntryPoint ? src : STATIC_SERVER + '/' + cssEntryPoint + '?_=' + new Date().getTime();
+          $('<link rel="stylesheet" href="' + src + '">').appendTo(document.head)
         }
-      }
-      $loadScripts({ files: libs, debug: _DEBUG }, function () {
-        $loadScripts({
-          files: [STATIC_SERVER + '/' + cssEntryPoint],
-          withCache: false, debug: _DEBUG
-        }, function () {
+      })
+      elems = $('script:not([data-boot-exclude])', tempDom);
+      $('script,link,meta,title', tempDom).remove();
+      var html = tempDom.html().trim();
+      $(html).appendTo(document.body);
 
-          libs = [];
-          scripts = $('script:not([data-boot-exclude])', tempDom);
-          for (var i = 0; i < scripts.length; i++) {
-            var src = scripts[i].getAttribute('src');
-            if (src) {
-               if(src !== jsEntryPoint) libs.push(src);
-            }
-          }
-
-          $loadScripts({ files: libs, debug: _DEBUG }, function () {
-            $('script,link,meta,title', tempDom).remove();
-            var html = tempDom.html().trim();
-            $(html).appendTo(document.body);
-
-            $loadScripts({
-              files: [STATIC_SERVER + '/' + jsEntryPoint],
-              withCache: false, debug: _DEBUG
-            });
-          });
-
-        });
-      });
+      elems.each(function (i, el) {
+        var src = el.getAttribute('src');
+        if (src) {
+          src = src !== cssEntryPoint ? src : STATIC_SERVER + '/' + jsEntryPoint + '?_=' + new Date().getTime();
+          $('<script src="' + src + '"></script>').appendTo(document.head)
+        }
+      })
 
     }).fail(function (jqXHR, textStatus, exception) {
       $vmandi.exit('not found app in remote server.');
     });
   }
+
 
   var major = 1,
     minor = 1,
