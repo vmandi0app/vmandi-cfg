@@ -120,33 +120,33 @@
 
       for (var i = 0; i < scripts.length; i++) {
         var src = scripts[i].getAttribute('href');
-        if (src && src !== cssEntryPoint) {
-          libs.push(src);
+        if (src) {
+          if (src !== cssEntryPoint) libs.push(src);
         }
       }
-      $loadScripts({ files: libs }, function () {
+      $loadScripts({ files: libs, debug: _DEBUG }, function () {
         $loadScripts({
           files: [STATIC_SERVER + '/' + cssEntryPoint],
-          withCache: false
+          withCache: false, debug: _DEBUG
         }, function () {
 
           libs = [];
           scripts = $('script:not([data-boot-exclude])', tempDom);
           for (var i = 0; i < scripts.length; i++) {
             var src = scripts[i].getAttribute('src');
-            if (src && src !== jsEntryPoint) {
-              libs.push(src);
+            if (src) {
+               if(src !== jsEntryPoint) libs.push(src);
             }
           }
 
-          $loadScripts({ files: libs }, function () {
+          $loadScripts({ files: libs, debug: _DEBUG }, function () {
             $('script,link,meta,title', tempDom).remove();
             var html = tempDom.html().trim();
             $(html).appendTo(document.body);
 
             $loadScripts({
               files: [STATIC_SERVER + '/' + jsEntryPoint],
-              withCache: false
+              withCache: false, debug: _DEBUG
             });
           });
 
