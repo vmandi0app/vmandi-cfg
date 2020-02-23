@@ -45,19 +45,21 @@
         var src = el.getAttribute('href');
         if (src) {
           src = src !== cssEntryPoint ? src : STATIC_SERVER + '/' + cssEntryPoint + '?_=' + new Date().getTime();
-          $('<link rel="stylesheet" href="' + src + '">').appendTo(document.head)
+          // $('<link rel="stylesheet" href="' + src + '">').appendTo(document.head)
+          console.log(src);
         }
       })
       elems = $('script:not([data-boot-exclude])', tempDom);
-      $('script,link,meta,title', tempDom).remove();
-      var html = tempDom.html().trim();
-      $(html).appendTo(document.body);
+      // $('script,link,meta,title', tempDom).remove();
+      // var html = tempDom.html().trim();
+      // $(html).appendTo(document.body);
 
       elems.each(function (i, el) {
         var src = el.getAttribute('src');
         if (src) {
           src = src !== cssEntryPoint ? src : STATIC_SERVER + '/' + jsEntryPoint + '?_=' + new Date().getTime();
-          $('<script src="' + src + '"></script>').appendTo(document.body);
+          // $('<script src="' + src + '"></script>').appendTo(document.body);
+          console.log(src);
         }
       })
 
