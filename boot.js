@@ -125,25 +125,35 @@
 				}
 			}
 			$loadScripts({ files: libs }, function () {
-				$loadScripts({ files: [STATIC_SERVER + '/' + cssEntryPoint], withCache: false })
+				$loadScripts({
+					files: [STATIC_SERVER + '/' + cssEntryPoint],
+					withCache: false
+				}, function () {
+
+					libs = [];
+					scripts = $('script:not([data-boot-exclude])', tempDom);
+					for (var i = 0; i < scripts.length; i++) {
+						var src = scripts[i].getAttribute('src');
+						if (src && src !== jsEntryPoint) {
+							libs.push(src);
+						}
+					}
+
+					$('script,link,meta,title', tempDom).remove();
+					var html = tempDom.html().trim();
+
+					$(html).appendTo(document.body);
+					
+					$loadScripts({ files: libs }, function () {
+						$loadScripts({
+							files: [STATIC_SERVER + '/' + jsEntryPoint],
+							withCache: false
+						});
+					});
+
+				})
 			})
-			libs = [];
-			scripts = $('script:not([data-boot-exclude])', tempDom);
-			for (var i = 0; i < scripts.length; i++) {
-				var src = scripts[i].getAttribute('src');
-				if (src && src !== jsEntryPoint) {
-					libs.push(src);
-				}
-			}
 
-			$('script,link,meta,title', tempDom).remove();
-			var html = tempDom.html().trim();
-
-			$(html).appendTo(document.body);
-
-			$loadScripts({ files: libs }, function () {
-				$loadScripts({ files: [STATIC_SERVER + '/' + jsEntryPoint], withCache: false })
-			})
 		}).fail(function (jqXHR, textStatus, exception) {
 			$vmandi.exit('not found app in remote server.');
 		});
